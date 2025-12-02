@@ -9,6 +9,14 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+
+// 🚦 Definir rate limiter para reservas
+const reservasLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,   // 15 minutos
+  max: 5,                     // máximo 5 solicitudes por ventana
+  message: "Demasiadas reservas desde esta IP, intentá nuevamente luego."
+});
+
 // 🔗 Conexión a la base de datos
 const db = mysql.createConnection({
   host: "localhost",
@@ -32,7 +40,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // 📌 Ruta: guardar reserva y enviar correo
-app.post("/reservas", async (req, res) => {
+app.post("/reservas", reservasLimiter, async (req, res) => {
   const { nombre, email, telefono, identrada, idsaida, idadultos } = req.body;
 
   // Insertar en base de datos
