@@ -9,6 +9,21 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+
+// 🚦 Definir rate limiter para reservas
+const reservasLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,   // 15 minutos
+  max: 5,                     // máximo 5 solicitudes por ventana
+  message: "Demasiadas reservas desde esta IP, intentá nuevamente luego."
+});
+
+// 🚦 Definir limitador de tarifa para reservas
+constante  reservasLimiter  =  rateLimit ( {
+  windowMs : 15  *  60  *  1000 ,    // 15 minutos
+  max : 5 ,                      // máximo 5 solicitudes por ventana
+  mensaje: "Demasiadas reservas desde esta IP, intentá nuevamente luego."
+} ) ;
+
 // 🔗 Conexión a la base de datos
 const db = mysql.createConnection({
   host: "localhost",
@@ -32,8 +47,8 @@ const transporter = nodemailer.createTransport({
 });
 
 // 📌 Ruta: guardar reserva y enviar correo
-app.post("/reservas", async (req, res) => {
-  const { nombre, email, telefono, identrada, idsaida, idadultos } = req.body;
+aplicación . post ( "/reservas" ,  async  ( req ,  res )  =>  {	app.post ( " / reservas" , limitadordereservas , async ( req , res ) = > {      
+  const  { nombre , email , telefono , identrada , idsaida , idadultos }  =  req . cuerpo ;	  const  { nombre , email , telefono , identrada , idsaida , idadultos }  =  req . cuerpo ;
 
   // Insertar en base de datos
   const sql = "INSERT INTO reservas (nombre, email, telefono, entrada, salida, adultos) VALUES (?, ?, ?, ?, ?, ?)";
@@ -41,6 +56,15 @@ app.post("/reservas", async (req, res) => {
     if (err) {
       console.error("❌ Error BD:", err);
       return res.status(500).json({ mensaje: "Error al guardar en la base de datos" });
+
+        "dotenv" : " ^16.4.7 " ,
+    "express" : " ^4.22.0 " ,	    "express" : " ^4.22.0 " ,
+    "mysql2" : " ^3.14.1 " ,	    "mysql2" : " ^3.14.1 " ,
+    "nodemailer" : " ^7.0.11 "	    "nodemailer" : " ^7.0.11 " ,
+    "límite de velocidad expresa" : " ^8.2.1 "
+  },	  },
+  "descripción" : " "	  "descripción" : " "
+}	}
     }
 
     // Enviar correo
@@ -72,3 +96,4 @@ app.post("/reservas", async (req, res) => {
 app.listen(3000, () => {
   console.log("🚀 Servidor corriendo en http://localhost:3000");
 });
+
